@@ -60,6 +60,49 @@ Production Reliability Recommendation
       ↓
 Fleet Stability
 
+```mermaid
+flowchart TD
+
+A[Silicon Errata / Stepping Notes]
+--> B[Firmware Workaround Mapping]
+
+B --> C[Validation Coverage Analysis]
+
+C --> D[Telemetry Correlation]
+
+D --> E[AI-Assisted RCA Engine]
+
+E --> F[Production Reliability Recommendation]
+
+F --> G[Fleet Stability & Infrastructure Reliability]
+```
+
+AI-Native Infrastructure Diagnostics Workflow
+Mermaid Diagram
+```mermaid
+flowchart TD
+
+A[BIOS / BMC Logs]
+--> D[Telemetry Correlation Layer]
+
+B[Redfish / IPMI Telemetry]
+--> D
+
+C[Jira / Validation Reports]
+--> D
+
+D --> E[RAG Knowledge Retrieval]
+
+E --> F[LLM-Assisted RCA]
+
+F --> G[Validation Recommendation]
+
+G --> H[Production Reliability Improvement]
+```
+
+
+
+
 Future Exploration Areas
 telemetry-driven diagnostics
 stepping-aware issue prediction
