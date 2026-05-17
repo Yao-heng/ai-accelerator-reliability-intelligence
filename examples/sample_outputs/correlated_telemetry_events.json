@@ -1,0 +1,152 @@
+[
+  {
+    "incident_id": "INC-0001",
+    "timestamp": "2026-05-12T14:02:11Z",
+    "accelerator_id": "accel-a17",
+    "rack_id": "rack-22",
+    "firmware_version": "7.4.2",
+    "event_code": "HBM_ECC_ESCALATION",
+    "subsystem": "hbm",
+    "severity": "WARNING",
+    "workload_id": "llm-serving-prod-shadow-041",
+    "workload_phase": "kv-cache-spill",
+    "summary": "HBM_ECC_ESCALATION: Corrected ECC rate crossed adaptive scrub threshold",
+    "correlated_metrics": [
+      {
+        "name": "hbm_ecc_uncorrected",
+        "value": 1,
+        "threshold": 0,
+        "status": "anomalous"
+      }
+    ],
+    "likely_failure_mode": "hbm_ecc_escalation",
+    "confidence": 0.75
+  },
+  {
+    "incident_id": "INC-0002",
+    "timestamp": "2026-05-12T14:02:40Z",
+    "accelerator_id": "accel-a17",
+    "rack_id": "rack-22",
+    "firmware_version": "7.4.2",
+    "event_code": "HBM_UNCORRECTABLE_PAGE",
+    "subsystem": "hbm",
+    "severity": "ERROR",
+    "workload_id": "llm-serving-prod-shadow-041",
+    "workload_phase": "kv-cache-spill",
+    "summary": "HBM_UNCORRECTABLE_PAGE: Uncorrectable ECC detected during attention-cache spill",
+    "correlated_metrics": [
+      {
+        "name": "hbm_ecc_uncorrected",
+        "value": 1,
+        "threshold": 0,
+        "status": "anomalous"
+      }
+    ],
+    "likely_failure_mode": "hbm_ecc_escalation",
+    "confidence": 0.75
+  },
+  {
+    "incident_id": "INC-0003",
+    "timestamp": "2026-05-12T15:18:04Z",
+    "accelerator_id": "accel-b03",
+    "rack_id": "rack-07",
+    "firmware_version": "7.4.1",
+    "event_code": "PCIE_REPLAY_STORM",
+    "subsystem": "pcie",
+    "severity": "WARNING",
+    "workload_id": "vision-transformer-batch-replay-019",
+    "workload_phase": "host-dma-burst",
+    "summary": "PCIE_REPLAY_STORM: Replay counter climbed during host DMA burst",
+    "correlated_metrics": [
+      {
+        "name": "pcie_replay_count",
+        "value": 1511,
+        "threshold": 1000,
+        "status": "anomalous"
+      }
+    ],
+    "likely_failure_mode": "pcie_link_instability",
+    "confidence": 0.75
+  },
+  {
+    "incident_id": "INC-0004",
+    "timestamp": "2026-05-12T16:44:21Z",
+    "accelerator_id": "accel-c91",
+    "rack_id": "rack-14",
+    "firmware_version": "7.5.0-rc2",
+    "event_code": "FABRIC_CRC_BURST",
+    "subsystem": "fabric",
+    "severity": "CRITICAL",
+    "workload_id": "distributed-training-canary-302",
+    "workload_phase": "allreduce-gradient-sync",
+    "summary": "FABRIC_CRC_BURST: Multi-link CRC burst triggered collective timeout",
+    "correlated_metrics": [
+      {
+        "name": "fabric_crc_errors",
+        "value": 14,
+        "threshold": 0,
+        "status": "anomalous"
+      },
+      {
+        "name": "inference_latency_ms",
+        "value": 57.9,
+        "threshold": 45,
+        "status": "anomalous"
+      }
+    ],
+    "likely_failure_mode": "fabric_crc_burst",
+    "confidence": 0.85
+  },
+  {
+    "incident_id": "INC-0005",
+    "timestamp": "2026-05-12T17:09:33Z",
+    "accelerator_id": "accel-d12",
+    "rack_id": "rack-09",
+    "firmware_version": "7.4.2",
+    "event_code": "THERMAL_THROTTLE_BOUNDARY",
+    "subsystem": "thermal",
+    "severity": "WARNING",
+    "workload_id": "recommendation-model-soak-118",
+    "workload_phase": "sustained-inference",
+    "summary": "THERMAL_THROTTLE_BOUNDARY: Thermal governor entered oscillating throttle band",
+    "correlated_metrics": [
+      {
+        "name": "temperature_c",
+        "value": 91.7,
+        "threshold": 88,
+        "status": "anomalous"
+      },
+      {
+        "name": "inference_latency_ms",
+        "value": 48.6,
+        "threshold": 45,
+        "status": "anomalous"
+      }
+    ],
+    "likely_failure_mode": "thermal_throttle_boundary",
+    "confidence": 0.85
+  },
+  {
+    "incident_id": "INC-0006",
+    "timestamp": "2026-05-12T18:27:09Z",
+    "accelerator_id": "accel-e44",
+    "rack_id": "rack-31",
+    "firmware_version": "7.4.2",
+    "event_code": "POWER_TRANSIENT_OVERSHOOT",
+    "subsystem": "power",
+    "severity": "ERROR",
+    "workload_id": "llm-prefill-sweep-072",
+    "workload_phase": "batch-size-step",
+    "summary": "POWER_TRANSIENT_OVERSHOOT: Voltage rail overshoot observed after batch-size step change",
+    "correlated_metrics": [
+      {
+        "name": "power_watts",
+        "value": 682.2,
+        "threshold": 650,
+        "status": "anomalous"
+      }
+    ],
+    "likely_failure_mode": "power_transient_overshoot",
+    "confidence": 0.75
+  }
+]

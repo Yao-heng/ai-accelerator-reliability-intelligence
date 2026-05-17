@@ -1,0 +1,160 @@
+[
+  {
+    "recommendation_id": "REC-0004",
+    "priority": "critical",
+    "title": "Stabilize fabric crc burst path",
+    "rationale": "accel-c91 showed fabric_crc_burst during allreduce-gradient-sync workload execution with 2 anomalous telemetry signal(s). A validation gap was detected.",
+    "evidence": [
+      "FABRIC_CRC_BURST: Multi-link CRC burst triggered collective timeout",
+      "fabric_crc_errors=14 threshold=0",
+      "inference_latency_ms=57.9 threshold=45"
+    ],
+    "affected_components": [
+      "fabric-transport",
+      "collective-operations",
+      "fabric-quarantine",
+      "firmware-rollback",
+      "fleet-health-reporting",
+      "multi-node-training",
+      "platform-supervisor",
+      "reset-orchestration"
+    ],
+    "expected_impact": "Improve fleet-level fault isolation and incident triage speed.",
+    "next_steps": [
+      "Replay the incident telemetry envelope in a controlled validation rack.",
+      "Enable firmware tracepoints for the implicated subsystem.",
+      "Add the missing validation condition to the release gate.",
+      "Open a firmware owner review with correlated evidence attached."
+    ]
+  },
+  {
+    "recommendation_id": "REC-0001",
+    "priority": "high",
+    "title": "Stabilize hbm ecc escalation path",
+    "rationale": "accel-a17 showed hbm_ecc_escalation during kv-cache-spill workload execution with 1 anomalous telemetry signal(s). A validation gap was detected.",
+    "evidence": [
+      "HBM_ECC_ESCALATION: Corrected ECC rate crossed adaptive scrub threshold",
+      "hbm_ecc_uncorrected=1 threshold=0"
+    ],
+    "affected_components": [
+      "hbm-training",
+      "memory-scrubbing",
+      "model-cache-integrity",
+      "page-retirement"
+    ],
+    "expected_impact": "Reduce uncorrectable memory events and avoid accelerator resets.",
+    "next_steps": [
+      "Replay the incident telemetry envelope in a controlled validation rack.",
+      "Enable firmware tracepoints for the implicated subsystem.",
+      "Add the missing validation condition to the release gate."
+    ]
+  },
+  {
+    "recommendation_id": "REC-0002",
+    "priority": "high",
+    "title": "Stabilize hbm ecc escalation path",
+    "rationale": "accel-a17 showed hbm_ecc_escalation during kv-cache-spill workload execution with 1 anomalous telemetry signal(s). A validation gap was detected.",
+    "evidence": [
+      "HBM_UNCORRECTABLE_PAGE: Uncorrectable ECC detected during attention-cache spill",
+      "hbm_ecc_uncorrected=1 threshold=0"
+    ],
+    "affected_components": [
+      "hbm-training",
+      "memory-scrubbing",
+      "model-cache-integrity",
+      "page-retirement"
+    ],
+    "expected_impact": "Reduce uncorrectable memory events and avoid accelerator resets.",
+    "next_steps": [
+      "Replay the incident telemetry envelope in a controlled validation rack.",
+      "Enable firmware tracepoints for the implicated subsystem.",
+      "Add the missing validation condition to the release gate."
+    ]
+  },
+  {
+    "recommendation_id": "REC-0005",
+    "priority": "high",
+    "title": "Stabilize thermal throttle boundary path",
+    "rationale": "accel-d12 showed thermal_throttle_boundary during sustained-inference workload execution with 2 anomalous telemetry signal(s). A validation gap was detected.",
+    "evidence": [
+      "THERMAL_THROTTLE_BOUNDARY: Thermal governor entered oscillating throttle band",
+      "temperature_c=91.7 threshold=88",
+      "inference_latency_ms=48.6 threshold=45"
+    ],
+    "affected_components": [
+      "thermal-governor",
+      "fan-zone-control",
+      "firmware-rollback",
+      "fleet-health-reporting",
+      "frequency-scaling",
+      "latency-slo",
+      "platform-supervisor",
+      "reset-orchestration"
+    ],
+    "expected_impact": "Improve sustained inference latency under high power density.",
+    "next_steps": [
+      "Replay the incident telemetry envelope in a controlled validation rack.",
+      "Enable firmware tracepoints for the implicated subsystem.",
+      "Add the missing validation condition to the release gate.",
+      "Open a firmware owner review with correlated evidence attached."
+    ]
+  },
+  {
+    "recommendation_id": "REC-0003",
+    "priority": "medium",
+    "title": "Stabilize pcie link instability path",
+    "rationale": "accel-b03 showed pcie_link_instability during host-dma-burst workload execution with 1 anomalous telemetry signal(s).",
+    "evidence": [
+      "PCIE_REPLAY_STORM: Replay counter climbed during host DMA burst",
+      "pcie_replay_count=1511 threshold=1000"
+    ],
+    "affected_components": [
+      "pcie-link-manager",
+      "driver-timeouts",
+      "host-dma",
+      "throughput-slo"
+    ],
+    "expected_impact": "Lower host-device retry pressure and prevent throughput collapse.",
+    "next_steps": [
+      "Replay the incident telemetry envelope in a controlled validation rack.",
+      "Enable firmware tracepoints for the implicated subsystem."
+    ]
+  },
+  {
+    "recommendation_id": "REC-0006",
+    "priority": "medium",
+    "title": "Stabilize power transient overshoot path",
+    "rationale": "accel-e44 showed power_transient_overshoot during batch-size-step workload execution with 1 anomalous telemetry signal(s).",
+    "evidence": [
+      "POWER_TRANSIENT_OVERSHOOT: Voltage rail overshoot observed after batch-size step change",
+      "power_watts=682.2 threshold=650"
+    ],
+    "affected_components": [
+      "power-policy",
+      "boost-states",
+      "brownout-protection",
+      "collective-operations",
+      "fabric-quarantine",
+      "fabric-transport",
+      "fan-zone-control",
+      "firmware-rollback",
+      "fleet-health-reporting",
+      "frequency-scaling",
+      "hbm-training",
+      "latency-slo",
+      "memory-scrubbing",
+      "model-cache-integrity",
+      "multi-node-training",
+      "page-retirement",
+      "platform-supervisor",
+      "reset-orchestration",
+      "thermal-governor",
+      "voltage-rails"
+    ],
+    "expected_impact": "Improve fleet-level fault isolation and incident triage speed.",
+    "next_steps": [
+      "Replay the incident telemetry envelope in a controlled validation rack.",
+      "Enable firmware tracepoints for the implicated subsystem."
+    ]
+  }
+]

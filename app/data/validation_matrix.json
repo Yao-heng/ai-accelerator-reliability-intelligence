@@ -1,0 +1,38 @@
+[
+  {
+    "scenario_id": "VAL-HBM-001",
+    "failure_mode": "hbm_ecc_escalation",
+    "firmware_versions": ["7.4.1"],
+    "workload_phases": ["training-checkpoint", "synthetic-memory-scrub"],
+    "environmental_conditions": ["nominal-thermal", "single-accelerator"],
+    "coverage_level": "partial",
+    "last_run": "2026-04-22"
+  },
+  {
+    "scenario_id": "VAL-PCIE-002",
+    "failure_mode": "pcie_link_instability",
+    "firmware_versions": ["7.4.1", "7.4.2"],
+    "workload_phases": ["host-dma-burst"],
+    "environmental_conditions": ["gen5-switch", "x16-link"],
+    "coverage_level": "full",
+    "last_run": "2026-05-02"
+  },
+  {
+    "scenario_id": "VAL-THERMAL-003",
+    "failure_mode": "thermal_throttle_boundary",
+    "firmware_versions": ["7.4.2"],
+    "workload_phases": ["synthetic-power-virus"],
+    "environmental_conditions": ["35c-inlet", "fan-zone-sweep"],
+    "coverage_level": "partial",
+    "last_run": "2026-04-28"
+  },
+  {
+    "scenario_id": "VAL-POWER-004",
+    "failure_mode": "power_transient_overshoot",
+    "firmware_versions": ["7.4.2"],
+    "workload_phases": ["batch-size-step"],
+    "environmental_conditions": ["vdd-core-margin-low", "rack-power-capping-off"],
+    "coverage_level": "full",
+    "last_run": "2026-05-09"
+  }
+]

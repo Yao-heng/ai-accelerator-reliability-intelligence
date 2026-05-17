@@ -1,0 +1,7 @@
+# Fictional accelerator reliability log stream for MVP demos.
+2026-05-12T14:02:11Z WARNING accelerator=accel-a17 rack=rack-22 fw=7.4.2 subsystem=hbm event=HBM_ECC_ESCALATION message="Corrected ECC rate crossed adaptive scrub threshold" bank=HBM2 channel=5 corrected=1842
+2026-05-12T14:02:40Z ERROR accelerator=accel-a17 rack=rack-22 fw=7.4.2 subsystem=hbm event=HBM_UNCORRECTABLE_PAGE message="Uncorrectable ECC detected during attention-cache spill" bank=HBM2 page=0x8f22 action=page_retire
+2026-05-12T15:18:04Z WARNING accelerator=accel-b03 rack=rack-07 fw=7.4.1 subsystem=pcie event=PCIE_REPLAY_STORM message="Replay counter climbed during host DMA burst" lane_width=x16 replay_count=1438 host=worker-11
+2026-05-12T16:44:21Z CRITICAL accelerator=accel-c91 rack=rack-14 fw=7.5.0-rc2 subsystem=fabric event=FABRIC_CRC_BURST message="Multi-link CRC burst triggered collective timeout" links=3 collective=allreduce action=fabric_quarantine
+2026-05-12T17:09:33Z WARNING accelerator=accel-d12 rack=rack-09 fw=7.4.2 subsystem=thermal event=THERMAL_THROTTLE_BOUNDARY message="Thermal governor entered oscillating throttle band" sensor=edge-diode temp_c=91.4 fan_zone=rear
+2026-05-12T18:27:09Z ERROR accelerator=accel-e44 rack=rack-31 fw=7.4.2 subsystem=power event=POWER_TRANSIENT_OVERSHOOT message="Voltage rail overshoot observed after batch-size step change" rail=vdd_core overshoot_mv=68 workload=llm-prefill

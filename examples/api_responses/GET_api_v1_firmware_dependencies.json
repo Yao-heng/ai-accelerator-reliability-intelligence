@@ -1,0 +1,182 @@
+{
+  "platform": "Fictional AIX-9000 accelerator platform",
+  "generated_from": "sample firmware integration manifest 2026.05",
+  "components": [
+    {
+      "name": "platform-supervisor",
+      "version": "7.4.2",
+      "owner": "firmware-platform",
+      "depends_on": [
+        "thermal-governor",
+        "power-policy",
+        "fabric-transport"
+      ],
+      "impacts": [
+        "fleet-health-reporting",
+        "reset-orchestration",
+        "firmware-rollback"
+      ],
+      "risk_notes": [
+        "Coordinates recovery paths across subsystems."
+      ]
+    },
+    {
+      "name": "hbm-training",
+      "version": "3.18.7",
+      "owner": "memory-reliability",
+      "depends_on": [
+        "power-policy"
+      ],
+      "impacts": [
+        "memory-scrubbing",
+        "page-retirement",
+        "model-cache-integrity"
+      ],
+      "risk_notes": [
+        "Sensitive to voltage rail excursions during cache spill workloads."
+      ]
+    },
+    {
+      "name": "pcie-link-manager",
+      "version": "2.11.4",
+      "owner": "host-io",
+      "depends_on": [
+        "platform-supervisor"
+      ],
+      "impacts": [
+        "host-dma",
+        "driver-timeouts",
+        "throughput-slo"
+      ],
+      "risk_notes": [
+        "Replay storms can hide behind recoverable link events."
+      ]
+    },
+    {
+      "name": "fabric-transport",
+      "version": "5.2.0-rc2",
+      "owner": "distributed-systems",
+      "depends_on": [
+        "power-policy"
+      ],
+      "impacts": [
+        "collective-operations",
+        "multi-node-training",
+        "fabric-quarantine"
+      ],
+      "risk_notes": [
+        "Release candidate has new CRC retry budget logic."
+      ]
+    },
+    {
+      "name": "thermal-governor",
+      "version": "4.6.9",
+      "owner": "systems-thermal",
+      "depends_on": [
+        "power-policy"
+      ],
+      "impacts": [
+        "frequency-scaling",
+        "latency-slo",
+        "fan-zone-control"
+      ],
+      "risk_notes": [
+        "Throttle hysteresis is workload-shape dependent."
+      ]
+    },
+    {
+      "name": "power-policy",
+      "version": "6.3.1",
+      "owner": "power-management",
+      "depends_on": [],
+      "impacts": [
+        "voltage-rails",
+        "boost-states",
+        "brownout-protection"
+      ],
+      "risk_notes": [
+        "Shared dependency for memory, thermal, and fabric stability."
+      ]
+    }
+  ],
+  "adjacency": {
+    "platform-supervisor": [
+      "thermal-governor",
+      "power-policy",
+      "fabric-transport"
+    ],
+    "hbm-training": [
+      "power-policy"
+    ],
+    "pcie-link-manager": [
+      "platform-supervisor"
+    ],
+    "fabric-transport": [
+      "power-policy"
+    ],
+    "thermal-governor": [
+      "power-policy"
+    ],
+    "power-policy": []
+  },
+  "blast_radius": {
+    "platform-supervisor": [
+      "driver-timeouts",
+      "firmware-rollback",
+      "fleet-health-reporting",
+      "host-dma",
+      "pcie-link-manager",
+      "reset-orchestration",
+      "throughput-slo"
+    ],
+    "hbm-training": [
+      "memory-scrubbing",
+      "model-cache-integrity",
+      "page-retirement"
+    ],
+    "pcie-link-manager": [
+      "driver-timeouts",
+      "host-dma",
+      "throughput-slo"
+    ],
+    "fabric-transport": [
+      "collective-operations",
+      "fabric-quarantine",
+      "firmware-rollback",
+      "fleet-health-reporting",
+      "multi-node-training",
+      "platform-supervisor",
+      "reset-orchestration"
+    ],
+    "thermal-governor": [
+      "fan-zone-control",
+      "firmware-rollback",
+      "fleet-health-reporting",
+      "frequency-scaling",
+      "latency-slo",
+      "platform-supervisor",
+      "reset-orchestration"
+    ],
+    "power-policy": [
+      "boost-states",
+      "brownout-protection",
+      "collective-operations",
+      "fabric-quarantine",
+      "fabric-transport",
+      "fan-zone-control",
+      "firmware-rollback",
+      "fleet-health-reporting",
+      "frequency-scaling",
+      "hbm-training",
+      "latency-slo",
+      "memory-scrubbing",
+      "model-cache-integrity",
+      "multi-node-training",
+      "page-retirement",
+      "platform-supervisor",
+      "reset-orchestration",
+      "thermal-governor",
+      "voltage-rails"
+    ]
+  }
+}

@@ -1,0 +1,54 @@
+[
+  {
+    "gap_id": "GAP-0001",
+    "incident_id": "INC-0001",
+    "failure_mode": "hbm_ecc_escalation",
+    "reason": "Existing validation does not cover this firmware and workload condition.",
+    "missing_conditions": [
+      "firmware=7.4.2",
+      "workload_phase=kv-cache-spill",
+      "failure_mode=hbm_ecc_escalation"
+    ],
+    "suggested_validation": "Add accelerated stress coverage that replays the observed telemetry envelope with firmware instrumentation enabled.",
+    "priority": "medium"
+  },
+  {
+    "gap_id": "GAP-0002",
+    "incident_id": "INC-0002",
+    "failure_mode": "hbm_ecc_escalation",
+    "reason": "Existing validation does not cover this firmware and workload condition.",
+    "missing_conditions": [
+      "firmware=7.4.2",
+      "workload_phase=kv-cache-spill",
+      "failure_mode=hbm_ecc_escalation"
+    ],
+    "suggested_validation": "Add accelerated stress coverage that replays the observed telemetry envelope with firmware instrumentation enabled.",
+    "priority": "high"
+  },
+  {
+    "gap_id": "GAP-0004",
+    "incident_id": "INC-0004",
+    "failure_mode": "fabric_crc_burst",
+    "reason": "No validation scenario covers this failure mode.",
+    "missing_conditions": [
+      "firmware=7.5.0-rc2",
+      "workload_phase=allreduce-gradient-sync",
+      "failure_mode=fabric_crc_burst"
+    ],
+    "suggested_validation": "Add accelerated stress coverage that replays the observed telemetry envelope with firmware instrumentation enabled.",
+    "priority": "high"
+  },
+  {
+    "gap_id": "GAP-0005",
+    "incident_id": "INC-0005",
+    "failure_mode": "thermal_throttle_boundary",
+    "reason": "Existing validation does not cover this firmware and workload condition.",
+    "missing_conditions": [
+      "firmware=7.4.2",
+      "workload_phase=sustained-inference",
+      "failure_mode=thermal_throttle_boundary"
+    ],
+    "suggested_validation": "Add accelerated stress coverage that replays the observed telemetry envelope with firmware instrumentation enabled.",
+    "priority": "medium"
+  }
+]
