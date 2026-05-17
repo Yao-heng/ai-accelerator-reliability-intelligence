@@ -2,7 +2,24 @@
 
 FastAPI MVP for AI infrastructure reliability analysis. The prototype ingests fictional accelerator firmware logs and telemetry, correlates incidents, detects validation coverage gaps, maps firmware dependencies, and produces reliability recommendations.
 
-This is intentionally not a chatbot demo. It is structured like a small reliability intelligence service that could later connect to fleet telemetry, release validation systems, firmware manifests, and incident workflows.
+This is intentionally not a chatbot demo. It is structured like a small reliability intelligence service that could later connect to fleet telemetry, release validation systems, firmware manifests, incident workflows, RAG knowledge retrieval, and AI-assisted RCA.
+
+## Overview
+
+Modern AI infrastructure systems are increasingly complex across firmware, accelerators, power systems, telemetry, networking, validation workflows, and distributed operations.
+
+This project explores an AI-native infrastructure reliability framework for GPU/TPU-class environments. The goal is to transform fragmented engineering knowledge into actionable operational intelligence.
+
+## Core Concepts
+
+- Silicon errata intelligence
+- Firmware workaround and dependency mapping
+- Validation coverage analysis
+- Telemetry correlation
+- AI-assisted root cause analysis
+- Infrastructure dependency graph analysis
+- Predictive reliability workflows
+- Fleet reliability recommendations
 
 ## MVP Scope
 
@@ -34,6 +51,11 @@ app/
     telemetry_correlator.py
     validation_gap_analyzer.py
   main.py
+docs/
+  PROJECT_PLAN.md
+  firmware_dependency_mapping.md
+  telemetry_correlation.md.md
+  validation_gap_analysis.md
 examples/
   api_responses/
   sample_outputs/
@@ -78,6 +100,20 @@ The application is split into thin API routes, shared Pydantic domain models, lo
 
 `RecommendationEngine` combines correlated incidents, validation gaps, and dependency blast radius into prioritized reliability recommendations with rationale, evidence, affected components, expected impact, and next steps.
 
+## Reliability Workflow
+
+```mermaid
+flowchart TD
+    A["BIOS / BMC / Accelerator Logs"] --> D["Telemetry Correlation Layer"]
+    B["Firmware Telemetry Samples"] --> D
+    C["Validation Matrix"] --> E["Validation Gap Analysis"]
+    D --> E
+    D --> F["Firmware Dependency Mapping"]
+    E --> G["Reliability Recommendation Engine"]
+    F --> G
+    G --> H["Fleet Stability Actions"]
+```
+
 ## Regenerate Example Outputs
 
 ```bash
@@ -86,6 +122,7 @@ python scripts/generate_examples.py
 
 Generated outputs are stored in:
 
+- `examples/sample_outputs/parsed_logs.json`
 - `examples/sample_outputs/correlated_telemetry_events.json`
 - `examples/sample_outputs/validation_gaps.json`
 - `examples/sample_outputs/firmware_dependency_map.json`
@@ -122,4 +159,4 @@ Validation gap examples include missing coverage for:
 - Replace `DataRepository` with adapters for log stores, telemetry streams, release validation systems, or firmware manifest registries.
 - Add richer time-window correlation in `TelemetryCorrelator` when real event timestamps and sample cadence are available.
 - Expand `ValidationGapAnalyzer` with stale-test detection, environment matching, and release-blocking policy.
-- Connect `RecommendationEngine` to ticketing or incident tooling once recommendation confidence and ownership rules mature.
+- Connect `RecommendationEngine` to ticketing, incident tooling, or RAG-backed RCA workflows once recommendation confidence and ownership rules mature.
