@@ -156,6 +156,84 @@ Validation gap examples include missing coverage for:
 
 ## Extensibility Notes
 
+---
+
+# Why This Matters
+
+As hyperscale AI infrastructure continues scaling, reliability challenges are becoming increasingly difficult to manage across:
+
+- firmware
+- drivers
+- operating systems
+- accelerators
+- thermal systems
+- power sequencing
+- distributed workloads
+- validation environments
+
+Traditional engineering workflows were not designed for this level of infrastructure complexity.
+
+This project explores how telemetry, RAG pipelines, infrastructure knowledge graphs, and LLM-assisted reasoning can improve operational reliability at scale.
+
+---
+
+# Proposed Architecture
+
+```mermaid
+flowchart TD
+
+A[Silicon Errata / Stepping Notes]
+--> B[Firmware Workaround Mapping]
+
+B --> C[Validation Coverage Analysis]
+
+C --> D[Telemetry Correlation]
+
+D --> E[AI-Assisted RCA Engine]
+
+E --> F[Production Reliability Recommendation]
+
+F --> G[Fleet Stability & Infrastructure Reliability]
+```
+
+---
+
+# AI-Native Infrastructure Diagnostics Workflow
+
+```mermaid
+flowchart TD
+
+A[BIOS / BMC Logs]
+--> D[Telemetry Correlation Layer]
+
+B[Redfish / IPMI Telemetry]
+--> D
+
+C[Jira / Validation Reports]
+--> D
+
+D --> E[RAG Knowledge Retrieval]
+
+E --> F[LLM-Assisted RCA]
+
+F --> G[Validation Recommendation]
+
+G --> H[Production Reliability Improvement]
+```
+
+---
+
+# Example Reliability Recommendation
+
+```json
+{
+  "risk_level": "High",
+  "possible_root_cause": "Firmware workaround missing for accelerator warm reset condition",
+  "recommended_validation": "Add warm reset loop test under high temperature with accelerator workload active",
+  "recommended_owner": "Firmware / Validation"
+}
+```
+
 - Replace `DataRepository` with adapters for log stores, telemetry streams, release validation systems, or firmware manifest registries.
 - Add richer time-window correlation in `TelemetryCorrelator` when real event timestamps and sample cadence are available.
 - Expand `ValidationGapAnalyzer` with stale-test detection, environment matching, and release-blocking policy.
