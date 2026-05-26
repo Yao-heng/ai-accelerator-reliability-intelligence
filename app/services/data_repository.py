@@ -15,6 +15,9 @@ class DataRepository:
     def load_telemetry(self) -> list[dict[str, Any]]:
         return self._load_json("telemetry_samples.json")
 
+    def load_gpu_telemetry_logs(self) -> str:
+        return (self.data_dir / "gpu_telemetry_logs.jsonl").read_text(encoding="utf-8")
+
     def load_validation_matrix(self) -> list[dict[str, Any]]:
         return self._load_json("validation_matrix.json")
 

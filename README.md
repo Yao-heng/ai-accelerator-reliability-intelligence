@@ -1,240 +1,69 @@
-# AI Accelerator Reliability Intelligence
+# AI Accelerator Reliability Intelligence (AI-RI)
 
-FastAPI MVP for AI infrastructure reliability analysis. The prototype ingests fictional accelerator firmware logs and telemetry, correlates incidents, detects validation coverage gaps, maps firmware dependencies, and produces reliability recommendations.
+A FastAPI-based Microservice Infrastructure for Cross-Layer Telemetry Log Fusion, Real-Time Root Cause Analysis (RCA), and Automated Triage inside Hyperscale AI Factories.
 
-This is intentionally not a chatbot demo. It is structured like a small reliability intelligence service that could later connect to fleet telemetry, release validation systems, firmware manifests, incident workflows, RAG knowledge retrieval, and AI-assisted RCA.
+This project is intentionally architected as a production-ready reliability intelligence service rather than a generic chatbot demo. It acts as the critical software-hardware bridge that ingests distributed telemetry, correlates core platform signals, and leverages domain-specific AI logic to automate triage and secure 99.999% uptime for high-density compute clusters.
 
-## Overview
+---
 
-Modern AI infrastructure systems are increasingly complex across firmware, accelerators, power systems, telemetry, networking, validation workflows, and distributed operations.
+## 🌟 Strategic Focus: Transforming Volume into Intelligence
 
-This project explores an AI-native infrastructure reliability framework for GPU/TPU-class environments. The goal is to transform fragmented engineering knowledge into actionable operational intelligence.
+As hyperscale AI infrastructure continues scaling across distributed topologies, reliability challenges have transcended traditional diagnostic capabilities. A single hardware or fabric fault can induce cascading synchronization timeouts (such as distributed All-Reduce Timeouts), halting massive LLM training clusters and resulting in catastrophic financial and SLA leakage.
 
-## Core Concepts
+When a high-density node crashes, operations teams are traditionally faced with an isolated "chaos of logs":
+* **Host BIOS:** Hexadecimal Machine Check Exceptions (MCE Status registers)
+* **Server BMC:** Fragmented System Event Logs (IPMI SEL)
+* **Accelerator Subsystems:** Satellite BMC (SBMC) errata and fabric symbol errors (PLDM/MCTP sideband telemetry)
 
-- Silicon errata intelligence
-- Firmware workaround and dependency mapping
-- Validation coverage analysis
-- Telemetry correlation
-- AI-assisted root cause analysis
-- Infrastructure dependency graph analysis
-- Predictive reliability workflows
-- Fleet reliability recommendations
+**AI-RI** serves as the definitive architecture to fuse these heterogeneous, multi-layer signals into a synchronized microsecond timeline at the exact millisecond of failure. By binding **24 years of enterprise server heritage**—forged across million-shipment portfolios like the ProLiant MicroServer, ML150/310/350, DL120/320 series, and the ultra-dense HPE Moonshot 1500 system—this framework maps raw hardware symptoms to precise silicon errata root causes and delivers actionable operational solutions instantly.
 
-## MVP Scope
+---
 
-- Log parser for accelerator firmware and platform log lines
-- Telemetry correlator for matching incidents to sampled health metrics
-- Validation gap analyzer for release-test coverage misses
-- Firmware dependency mapper for blast-radius analysis
-- Recommendation engine for prioritized reliability actions
-- Fictional but realistic sample data and generated example outputs
+## 🏗 Core Concepts & Capabilities
 
-## Project Structure
+* **Silicon Errata Intelligence:** Cross-referencing CPU/GPU stepping anomalies and active hardware workarounds.
+* **Cross-Layer Log Fusion:** Binding asynchronous telemetry across BIOS, BMC, and accelerator sideband.
+* **Deterministic Pattern Mapping:** Converting complex hardware failure modes into clean, identifiable signature vectors.
+* **Validation Gap Analysis:** Correlating real-world field crashes back to automated release-test matrices to eliminate coverage misses.
+* **Automated Mitigations:** Driving Infrastructure-as-Code (IaC) routines to enforce dynamic power capping, thermal adjustment, or graceful node evacuation prior to cluster-wide failure.
+
+---
+
+## 📂 Project Structure
 
 ```text
 app/
   api/
-    routes.py
+    routes.py                     # Thin RESTful API routes handling Redfish and telemetry ingestion
   data/
-    accelerator_logs.log
-    firmware_dependencies.json
-    telemetry_samples.json
-    validation_matrix.json
+    accelerator_logs.log          # Raw multi-layer firmware and OS log lines
+    firmware_dependencies.json    # Manifest mapping subsystem blast radius and adjacency
+    gpu_telemetry_logs.jsonl      # High-cadence GPU fleet telemetry stream samples
+    telemetry_samples.json        # Normalized JSON target matrices
+    validation_matrix.json        # Release validation test coverage matrix
   models/
-    schemas.py
+    schemas.py                    # Strong Pydantic domain models for rigorous validation
   services/
-    data_repository.py
-    firmware_dependency_mapper.py
-    log_parser.py
-    recommendation_engine.py
-    telemetry_correlator.py
-    validation_gap_analyzer.py
-  main.py
+    anomaly_detector.py           # Real-time monitoring for HBM ECC, PCIe replays, and fabric CRC
+    analyzer.py                   # Local intelligence and pattern arbitration orchestration
+    data_repository.py            # Extensible local data access adapters
+    firmware_dependency_mapper.py # Blast-radius calculation across runtime and firmware layers
+    infrastructure_advisor.py     # High-level operations advisor (Rollout freezes, quarantines)
+    log_parser.py                 # Structural converter translating hardware lines to domain objects
+    recommendation_engine.py      # Core engine outputting Root Cause and Actionable Solutions
+    risk_scoring.py               # Aggregated 0-100 risk matrices for rack and node-level triage
+    telemetry_correlator.py       # Microsecond-window time-series alignment handler
+    telemetry_ingestion.py        # Normalizes broad field aliases into canonical schemas
+    validation_gap_analyzer.py    # Tracks missing test cases for workload phases and platforms
+  main.py                         # FastAPI Application entrypoint
 docs/
   PROJECT_PLAN.md
   firmware_dependency_mapping.md
-  telemetry_correlation.md.md
+  telemetry_correlation.md
   validation_gap_analysis.md
 examples/
   api_responses/
   sample_outputs/
 scripts/
-  generate_examples.py
+  generate_examples.py            # Utility script simulating real-world infrastructure failures
 requirements.txt
-```
-
-## Setup
-
-```bash
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload
-```
-
-Open:
-
-- API docs: `http://127.0.0.1:8000/docs`
-- Health check: `http://127.0.0.1:8000/health`
-
-## API Endpoints
-
-- `GET /api/v1/logs/parsed`
-- `GET /api/v1/telemetry/correlated`
-- `GET /api/v1/validation/gaps`
-- `GET /api/v1/firmware/dependencies`
-- `GET /api/v1/recommendations`
-
-## Architecture
-
-The application is split into thin API routes, shared Pydantic domain models, local sample-data access, and focused reliability services.
-
-`LogParser` converts structured firmware log lines into `AcceleratorLogEntry` records. It preserves subsystem, event code, firmware version, rack, and extra key-value metadata so later stages can reason about operational context.
-
-`TelemetryCorrelator` links warning, error, and critical log events to nearest telemetry samples for the same accelerator and firmware version. It flags anomalous signals such as uncorrectable HBM ECC, PCIe replay storms, fabric CRC bursts, thermal boundary crossing, power overshoot, and latency impact.
-
-`ValidationGapAnalyzer` compares correlated failure modes against the sample validation matrix. It identifies missing coverage for firmware versions, workload phases, and newly observed failure modes.
-
-`FirmwareDependencyMapper` turns a firmware integration manifest into dependency adjacency and blast-radius views. This helps explain which runtime, driver, hardware, and fleet surfaces may be affected by a subsystem issue.
-
-`RecommendationEngine` combines correlated incidents, validation gaps, and dependency blast radius into prioritized reliability recommendations with rationale, evidence, affected components, expected impact, and next steps.
-
-## Reliability Workflow
-
-```mermaid
-flowchart TD
-    A["BIOS / BMC / Accelerator Logs"] --> D["Telemetry Correlation Layer"]
-    B["Firmware Telemetry Samples"] --> D
-    C["Validation Matrix"] --> E["Validation Gap Analysis"]
-    D --> E
-    D --> F["Firmware Dependency Mapping"]
-    E --> G["Reliability Recommendation Engine"]
-    F --> G
-    G --> H["Fleet Stability Actions"]
-```
-
-## Regenerate Example Outputs
-
-```bash
-python scripts/generate_examples.py
-```
-
-Generated outputs are stored in:
-
-- `examples/sample_outputs/parsed_logs.json`
-- `examples/sample_outputs/correlated_telemetry_events.json`
-- `examples/sample_outputs/validation_gaps.json`
-- `examples/sample_outputs/firmware_dependency_map.json`
-- `examples/sample_outputs/reliability_recommendations.json`
-
-Mirrored API response examples are stored in `examples/api_responses`.
-
-The API response examples include:
-
-- `GET_api_v1_logs_parsed.json`
-- `GET_api_v1_telemetry_correlated.json`
-- `GET_api_v1_validation_gaps.json`
-- `GET_api_v1_firmware_dependencies.json`
-- `GET_api_v1_recommendations.json`
-
-## Example Output Highlights
-
-The sample data produces:
-
-- Correlated HBM ECC escalation on `accel-a17` during `kv-cache-spill`
-- PCIe replay storm on `accel-b03` during `host-dma-burst`
-- Fabric CRC burst on release-candidate firmware `7.5.0-rc2`
-- Thermal throttle boundary oscillation under sustained inference
-- Power transient overshoot during an LLM prefill batch-size step
-
-Validation gap examples include missing coverage for:
-
-- HBM ECC escalation on firmware `7.4.2` during `kv-cache-spill`
-- Fabric CRC burst on firmware `7.5.0-rc2` during distributed allreduce
-- Thermal throttle boundary behavior during sustained inference
-
-## Extensibility Notes
-
----
-
-# Why This Matters
-
-As hyperscale AI infrastructure continues scaling, reliability challenges are becoming increasingly difficult to manage across:
-
-- firmware
-- drivers
-- operating systems
-- accelerators
-- thermal systems
-- power sequencing
-- distributed workloads
-- validation environments
-
-Traditional engineering workflows were not designed for this level of infrastructure complexity.
-
-This project explores how telemetry, RAG pipelines, infrastructure knowledge graphs, and LLM-assisted reasoning can improve operational reliability at scale.
-
----
-
-# Proposed Architecture
-
-```mermaid
-flowchart TD
-
-A[Silicon Errata / Stepping Notes]
---> B[Firmware Workaround Mapping]
-
-B --> C[Validation Coverage Analysis]
-
-C --> D[Telemetry Correlation]
-
-D --> E[AI-Assisted RCA Engine]
-
-E --> F[Production Reliability Recommendation]
-
-F --> G[Fleet Stability & Infrastructure Reliability]
-```
-
----
-
-# AI-Native Infrastructure Diagnostics Workflow
-
-```mermaid
-flowchart TD
-
-A[BIOS / BMC Logs]
---> D[Telemetry Correlation Layer]
-
-B[Redfish / IPMI Telemetry]
---> D
-
-C[Jira / Validation Reports]
---> D
-
-D --> E[RAG Knowledge Retrieval]
-
-E --> F[LLM-Assisted RCA]
-
-F --> G[Validation Recommendation]
-
-G --> H[Production Reliability Improvement]
-```
-
----
-
-# Example Reliability Recommendation
-
-```json
-{
-  "risk_level": "High",
-  "possible_root_cause": "Firmware workaround missing for accelerator warm reset condition",
-  "recommended_validation": "Add warm reset loop test under high temperature with accelerator workload active",
-  "recommended_owner": "Firmware / Validation"
-}
-```
-
-- Replace `DataRepository` with adapters for log stores, telemetry streams, release validation systems, or firmware manifest registries.
-- Add richer time-window correlation in `TelemetryCorrelator` when real event timestamps and sample cadence are available.
-- Expand `ValidationGapAnalyzer` with stale-test detection, environment matching, and release-blocking policy.
-- Connect `RecommendationEngine` to ticketing, incident tooling, or RAG-backed RCA workflows once recommendation confidence and ownership rules mature.

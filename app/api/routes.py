@@ -1,12 +1,15 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 from app.models.schemas import (
     AcceleratorLogEntry,
+    AnalyzeRequest,
+    AnalyzeResponse,
     CorrelatedEvent,
     DependencyMap,
     ReliabilityRecommendation,
     ValidationGap,
 )
+from app.services.analyzer import ReliabilityAnalyzer
 from app.services.data_repository import DataRepository
 from app.services.firmware_dependency_mapper import FirmwareDependencyMapper
 from app.services.log_parser import LogParser
@@ -22,6 +25,11 @@ correlator = TelemetryCorrelator()
 gap_analyzer = ValidationGapAnalyzer()
 dependency_mapper = FirmwareDependencyMapper()
 recommendation_engine = RecommendationEngine()
+analyzer = ReliabilityAnalyzer()
+
+
+def run_default_analysis() -> AnalyzeResponse:
+    return analyzer.analyze(repository.load_gpu_telemetry_logs())
 
 
 @router.get("/logs/parsed", response_model=list[AcceleratorLogEntry])
@@ -72,3 +80,13 @@ def get_recommendations() -> list[ReliabilityRecommendation]:
         validation_gaps,
         dependency_map,
     )
+
+
+@router.post("/analyze", response_model=AnalyzeResponse)
+def analyze_telemetry(request: AnalyzeRequest | None = None) -> AnalyzeResponse:
+    """Analyze GPU/TPU-scale telemetry for anomalies, risk, and reliability actions."""
+    payload = request.telemetry if request and request.telemetry is not None else repository.load_gpu_telemetry_logs()
+    try:
+        return analyzer.analyze(payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc

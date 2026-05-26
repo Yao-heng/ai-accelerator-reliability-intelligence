@@ -1,0 +1,385 @@
+{
+  "ingestion": {
+    "source": "jsonl",
+    "sample_count": 6,
+    "accelerator_count": 5,
+    "rack_count": 5,
+    "firmware_versions": [
+      "7.4.1",
+      "7.4.2",
+      "7.5.0-rc2"
+    ],
+    "workload_phases": [
+      "allreduce-gradient-sync",
+      "batch-size-step",
+      "host-dma-burst",
+      "prefill-ramp",
+      "sustained-inference"
+    ],
+    "time_range": {
+      "start": "2026-05-13T03:11:02Z",
+      "end": "2026-05-13T03:21:28Z"
+    }
+  },
+  "anomalies": [
+    {
+      "anomaly_id": "ANOM-0001",
+      "timestamp": "2026-05-13T03:11:02Z",
+      "accelerator_id": "gpu-r22-a17",
+      "rack_id": "rack-22",
+      "firmware_version": "7.4.2",
+      "workload_id": "llm-serving-prod-774",
+      "workload_phase": "prefill-ramp",
+      "metric": "temperature_c",
+      "value": 87.4,
+      "threshold": 86,
+      "severity": "warning",
+      "failure_mode": "thermal_throttle_boundary",
+      "description": "temperature_c=87.4 crossed 86 on gpu-r22-a17 during prefill-ramp."
+    },
+    {
+      "anomaly_id": "ANOM-0002",
+      "timestamp": "2026-05-13T03:11:02Z",
+      "accelerator_id": "gpu-r22-a17",
+      "rack_id": "rack-22",
+      "firmware_version": "7.4.2",
+      "workload_id": "llm-serving-prod-774",
+      "workload_phase": "prefill-ramp",
+      "metric": "power_watts",
+      "value": 661.8,
+      "threshold": 640,
+      "severity": "warning",
+      "failure_mode": "power_transient_overshoot",
+      "description": "power_watts=661.8 crossed 640 on gpu-r22-a17 during prefill-ramp."
+    },
+    {
+      "anomaly_id": "ANOM-0003",
+      "timestamp": "2026-05-13T03:12:17Z",
+      "accelerator_id": "gpu-r22-a17",
+      "rack_id": "rack-22",
+      "firmware_version": "7.4.2",
+      "workload_id": "llm-serving-prod-774",
+      "workload_phase": "prefill-ramp",
+      "metric": "temperature_c",
+      "value": 93.1,
+      "threshold": 92,
+      "severity": "critical",
+      "failure_mode": "thermal_throttle_boundary",
+      "description": "temperature_c=93.1 crossed 92 on gpu-r22-a17 during prefill-ramp."
+    },
+    {
+      "anomaly_id": "ANOM-0004",
+      "timestamp": "2026-05-13T03:12:17Z",
+      "accelerator_id": "gpu-r22-a17",
+      "rack_id": "rack-22",
+      "firmware_version": "7.4.2",
+      "workload_id": "llm-serving-prod-774",
+      "workload_phase": "prefill-ramp",
+      "metric": "hbm_ecc_uncorrected",
+      "value": 2,
+      "threshold": 2,
+      "severity": "critical",
+      "failure_mode": "hbm_ecc_escalation",
+      "description": "hbm_ecc_uncorrected=2 crossed 2 on gpu-r22-a17 during prefill-ramp."
+    },
+    {
+      "anomaly_id": "ANOM-0005",
+      "timestamp": "2026-05-13T03:12:17Z",
+      "accelerator_id": "gpu-r22-a17",
+      "rack_id": "rack-22",
+      "firmware_version": "7.4.2",
+      "workload_id": "llm-serving-prod-774",
+      "workload_phase": "prefill-ramp",
+      "metric": "power_watts",
+      "value": 692.5,
+      "threshold": 680,
+      "severity": "critical",
+      "failure_mode": "power_transient_overshoot",
+      "description": "power_watts=692.5 crossed 680 on gpu-r22-a17 during prefill-ramp."
+    },
+    {
+      "anomaly_id": "ANOM-0006",
+      "timestamp": "2026-05-13T03:12:17Z",
+      "accelerator_id": "gpu-r22-a17",
+      "rack_id": "rack-22",
+      "firmware_version": "7.4.2",
+      "workload_id": "llm-serving-prod-774",
+      "workload_phase": "prefill-ramp",
+      "metric": "inference_latency_ms",
+      "value": 61.7,
+      "threshold": 60,
+      "severity": "critical",
+      "failure_mode": "latency_slo_degradation",
+      "description": "inference_latency_ms=61.7 crossed 60 on gpu-r22-a17 during prefill-ramp."
+    },
+    {
+      "anomaly_id": "ANOM-0007",
+      "timestamp": "2026-05-13T03:13:44Z",
+      "accelerator_id": "gpu-r07-b03",
+      "rack_id": "rack-07",
+      "firmware_version": "7.4.1",
+      "workload_id": "embedding-index-refresh-228",
+      "workload_phase": "host-dma-burst",
+      "metric": "pcie_replay_count",
+      "value": 1642,
+      "threshold": 1500,
+      "severity": "critical",
+      "failure_mode": "pcie_link_instability",
+      "description": "pcie_replay_count=1642 crossed 1500 on gpu-r07-b03 during host-dma-burst."
+    },
+    {
+      "anomaly_id": "ANOM-0008",
+      "timestamp": "2026-05-13T03:15:09Z",
+      "accelerator_id": "gpu-r14-c91",
+      "rack_id": "rack-14",
+      "firmware_version": "7.5.0-rc2",
+      "workload_id": "distributed-training-canary-302",
+      "workload_phase": "allreduce-gradient-sync",
+      "metric": "power_watts",
+      "value": 647.2,
+      "threshold": 640,
+      "severity": "warning",
+      "failure_mode": "power_transient_overshoot",
+      "description": "power_watts=647.2 crossed 640 on gpu-r14-c91 during allreduce-gradient-sync."
+    },
+    {
+      "anomaly_id": "ANOM-0009",
+      "timestamp": "2026-05-13T03:15:09Z",
+      "accelerator_id": "gpu-r14-c91",
+      "rack_id": "rack-14",
+      "firmware_version": "7.5.0-rc2",
+      "workload_id": "distributed-training-canary-302",
+      "workload_phase": "allreduce-gradient-sync",
+      "metric": "fabric_crc_errors",
+      "value": 15,
+      "threshold": 12,
+      "severity": "critical",
+      "failure_mode": "fabric_crc_burst",
+      "description": "fabric_crc_errors=15 crossed 12 on gpu-r14-c91 during allreduce-gradient-sync."
+    },
+    {
+      "anomaly_id": "ANOM-0010",
+      "timestamp": "2026-05-13T03:15:09Z",
+      "accelerator_id": "gpu-r14-c91",
+      "rack_id": "rack-14",
+      "firmware_version": "7.5.0-rc2",
+      "workload_id": "distributed-training-canary-302",
+      "workload_phase": "allreduce-gradient-sync",
+      "metric": "inference_latency_ms",
+      "value": 58.3,
+      "threshold": 45,
+      "severity": "warning",
+      "failure_mode": "latency_slo_degradation",
+      "description": "inference_latency_ms=58.3 crossed 45 on gpu-r14-c91 during allreduce-gradient-sync."
+    },
+    {
+      "anomaly_id": "ANOM-0011",
+      "timestamp": "2026-05-13T03:18:33Z",
+      "accelerator_id": "gpu-r09-d12",
+      "rack_id": "rack-09",
+      "firmware_version": "7.4.2",
+      "workload_id": "recommendation-soak-118",
+      "workload_phase": "sustained-inference",
+      "metric": "temperature_c",
+      "value": 90.2,
+      "threshold": 86,
+      "severity": "warning",
+      "failure_mode": "thermal_throttle_boundary",
+      "description": "temperature_c=90.2 crossed 86 on gpu-r09-d12 during sustained-inference."
+    },
+    {
+      "anomaly_id": "ANOM-0012",
+      "timestamp": "2026-05-13T03:18:33Z",
+      "accelerator_id": "gpu-r09-d12",
+      "rack_id": "rack-09",
+      "firmware_version": "7.4.2",
+      "workload_id": "recommendation-soak-118",
+      "workload_phase": "sustained-inference",
+      "metric": "inference_latency_ms",
+      "value": 49.8,
+      "threshold": 45,
+      "severity": "warning",
+      "failure_mode": "latency_slo_degradation",
+      "description": "inference_latency_ms=49.8 crossed 45 on gpu-r09-d12 during sustained-inference."
+    },
+    {
+      "anomaly_id": "ANOM-0013",
+      "timestamp": "2026-05-13T03:21:28Z",
+      "accelerator_id": "gpu-r31-e44",
+      "rack_id": "rack-31",
+      "firmware_version": "7.4.2",
+      "workload_id": "llm-prefill-sweep-072",
+      "workload_phase": "batch-size-step",
+      "metric": "power_watts",
+      "value": 684.1,
+      "threshold": 680,
+      "severity": "critical",
+      "failure_mode": "power_transient_overshoot",
+      "description": "power_watts=684.1 crossed 680 on gpu-r31-e44 during batch-size-step."
+    }
+  ],
+  "risk_scores": [
+    {
+      "accelerator_id": "gpu-r22-a17",
+      "rack_id": "rack-22",
+      "score": 100,
+      "level": "critical",
+      "drivers": [
+        "temperature_c=87.4 (warning)",
+        "power_watts=661.8 (warning)",
+        "temperature_c=93.1 (critical)",
+        "hbm_ecc_uncorrected=2 (critical)",
+        "power_watts=692.5 (critical)",
+        "inference_latency_ms=61.7 (critical)",
+        "multiple concurrent failure modes"
+      ]
+    },
+    {
+      "accelerator_id": "gpu-r14-c91",
+      "rack_id": "rack-14",
+      "score": 100,
+      "level": "critical",
+      "drivers": [
+        "power_watts=647.2 (warning)",
+        "fabric_crc_errors=15 (critical)",
+        "inference_latency_ms=58.3 (warning)",
+        "multiple concurrent failure modes"
+      ]
+    },
+    {
+      "accelerator_id": "gpu-r09-d12",
+      "rack_id": "rack-09",
+      "score": 56,
+      "level": "high",
+      "drivers": [
+        "temperature_c=90.2 (warning)",
+        "inference_latency_ms=49.8 (warning)"
+      ]
+    },
+    {
+      "accelerator_id": "gpu-r31-e44",
+      "rack_id": "rack-31",
+      "score": 53,
+      "level": "medium",
+      "drivers": [
+        "power_watts=684.1 (critical)"
+      ]
+    },
+    {
+      "accelerator_id": "gpu-r07-b03",
+      "rack_id": "rack-07",
+      "score": 50,
+      "level": "medium",
+      "drivers": [
+        "pcie_replay_count=1642 (critical)"
+      ]
+    }
+  ],
+  "recommendations": [
+    {
+      "recommendation_id": "OPS-0001",
+      "priority": "critical",
+      "title": "Contain gpu-r22-a17 critical infrastructure risk",
+      "rationale": "gpu-r22-a17 in rack-22 reached risk score 100/100 from 6 telemetry anomaly signal(s).",
+      "evidence": [
+        "temperature_c=87.4 crossed 86 on gpu-r22-a17 during prefill-ramp.",
+        "power_watts=661.8 crossed 640 on gpu-r22-a17 during prefill-ramp.",
+        "temperature_c=93.1 crossed 92 on gpu-r22-a17 during prefill-ramp.",
+        "hbm_ecc_uncorrected=2 crossed 2 on gpu-r22-a17 during prefill-ramp.",
+        "power_watts=692.5 crossed 680 on gpu-r22-a17 during prefill-ramp."
+      ],
+      "affected_components": [
+        "HBM memory subsystem",
+        "serving runtime SLO path",
+        "rack power delivery",
+        "rack thermal envelope"
+      ],
+      "expected_impact": "Prevent accelerator resets, workload evacuation, and correlated rack incidents.",
+      "next_steps": [
+        "Attach the telemetry envelope to the incident ticket and freeze firmware rollout for the affected rack.",
+        "Compare the accelerator against same-rack peers for correlated power, thermal, and fabric signals.",
+        "Run rack power headroom verification before allowing larger prefill batches.",
+        "Check fan curves, inlet temperature, and workload placement for thermal coupling.",
+        "Drain or quarantine the accelerator until replay validation passes."
+      ]
+    },
+    {
+      "recommendation_id": "OPS-0002",
+      "priority": "critical",
+      "title": "Contain gpu-r14-c91 critical infrastructure risk",
+      "rationale": "gpu-r14-c91 in rack-14 reached risk score 100/100 from 3 telemetry anomaly signal(s).",
+      "evidence": [
+        "power_watts=647.2 crossed 640 on gpu-r14-c91 during allreduce-gradient-sync.",
+        "fabric_crc_errors=15 crossed 12 on gpu-r14-c91 during allreduce-gradient-sync.",
+        "inference_latency_ms=58.3 crossed 45 on gpu-r14-c91 during allreduce-gradient-sync."
+      ],
+      "affected_components": [
+        "accelerator interconnect fabric",
+        "serving runtime SLO path",
+        "rack power delivery"
+      ],
+      "expected_impact": "Prevent accelerator resets, workload evacuation, and correlated rack incidents.",
+      "next_steps": [
+        "Attach the telemetry envelope to the incident ticket and freeze firmware rollout for the affected rack.",
+        "Compare the accelerator against same-rack peers for correlated power, thermal, and fabric signals.",
+        "Run rack power headroom verification before allowing larger prefill batches.",
+        "Drain or quarantine the accelerator until replay validation passes."
+      ]
+    },
+    {
+      "recommendation_id": "OPS-0003",
+      "priority": "high",
+      "title": "Contain gpu-r09-d12 high infrastructure risk",
+      "rationale": "gpu-r09-d12 in rack-09 reached risk score 56/100 from 2 telemetry anomaly signal(s).",
+      "evidence": [
+        "temperature_c=90.2 crossed 86 on gpu-r09-d12 during sustained-inference.",
+        "inference_latency_ms=49.8 crossed 45 on gpu-r09-d12 during sustained-inference."
+      ],
+      "affected_components": [
+        "serving runtime SLO path",
+        "rack thermal envelope"
+      ],
+      "expected_impact": "Reduce performance collapse risk and improve incident containment time.",
+      "next_steps": [
+        "Attach the telemetry envelope to the incident ticket and freeze firmware rollout for the affected rack.",
+        "Compare the accelerator against same-rack peers for correlated power, thermal, and fabric signals.",
+        "Check fan curves, inlet temperature, and workload placement for thermal coupling."
+      ]
+    },
+    {
+      "recommendation_id": "OPS-0004",
+      "priority": "medium",
+      "title": "Contain gpu-r31-e44 medium infrastructure risk",
+      "rationale": "gpu-r31-e44 in rack-31 reached risk score 53/100 from 1 telemetry anomaly signal(s).",
+      "evidence": [
+        "power_watts=684.1 crossed 680 on gpu-r31-e44 during batch-size-step."
+      ],
+      "affected_components": [
+        "rack power delivery"
+      ],
+      "expected_impact": "Improve early warning precision for fleet operations.",
+      "next_steps": [
+        "Attach the telemetry envelope to the incident ticket and freeze firmware rollout for the affected rack.",
+        "Compare the accelerator against same-rack peers for correlated power, thermal, and fabric signals.",
+        "Run rack power headroom verification before allowing larger prefill batches."
+      ]
+    },
+    {
+      "recommendation_id": "OPS-0005",
+      "priority": "medium",
+      "title": "Contain gpu-r07-b03 medium infrastructure risk",
+      "rationale": "gpu-r07-b03 in rack-07 reached risk score 50/100 from 1 telemetry anomaly signal(s).",
+      "evidence": [
+        "pcie_replay_count=1642 crossed 1500 on gpu-r07-b03 during host-dma-burst."
+      ],
+      "affected_components": [
+        "host PCIe fabric"
+      ],
+      "expected_impact": "Improve early warning precision for fleet operations.",
+      "next_steps": [
+        "Attach the telemetry envelope to the incident ticket and freeze firmware rollout for the affected rack.",
+        "Compare the accelerator against same-rack peers for correlated power, thermal, and fabric signals."
+      ]
+    }
+  ]
+}

@@ -115,3 +115,56 @@ class RawFirmwareDependencyDocument(BaseModel):
     platform: str
     generated_from: str
     components: list[dict[str, Any]]
+
+
+class TelemetryEnvelope(BaseModel):
+    source: str = "inline"
+    samples: list[TelemetrySample]
+
+
+class TelemetryIngestionSummary(BaseModel):
+    source: str
+    sample_count: int
+    accelerator_count: int
+    rack_count: int
+    firmware_versions: list[str]
+    workload_phases: list[str]
+    time_range: dict[str, str]
+
+
+class Anomaly(BaseModel):
+    anomaly_id: str
+    timestamp: str
+    accelerator_id: str
+    rack_id: str
+    firmware_version: str
+    workload_id: str
+    workload_phase: str
+    metric: str
+    value: float | int
+    threshold: float | int
+    severity: str
+    failure_mode: str
+    description: str
+
+
+class RiskScore(BaseModel):
+    accelerator_id: str
+    rack_id: str
+    score: int = Field(ge=0, le=100)
+    level: str
+    drivers: list[str]
+
+
+class AnalyzeRequest(BaseModel):
+    telemetry: list[dict[str, Any]] | None = Field(
+        default=None,
+        description="Optional telemetry samples. If omitted, bundled GPU telemetry logs are analyzed.",
+    )
+
+
+class AnalyzeResponse(BaseModel):
+    ingestion: TelemetryIngestionSummary
+    anomalies: list[Anomaly]
+    risk_scores: list[RiskScore]
+    recommendations: list[ReliabilityRecommendation]

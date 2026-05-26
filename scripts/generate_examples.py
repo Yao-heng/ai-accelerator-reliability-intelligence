@@ -5,6 +5,7 @@ import sys
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
+from app.services.analyzer import ReliabilityAnalyzer
 from app.services.data_repository import DataRepository
 from app.services.firmware_dependency_mapper import FirmwareDependencyMapper
 from app.services.log_parser import LogParser
@@ -31,6 +32,7 @@ def main() -> None:
         repository.load_firmware_dependencies()
     )
     recommendations = RecommendationEngine().recommend(correlated, gaps, dependencies)
+    analysis = ReliabilityAnalyzer().analyze(repository.load_gpu_telemetry_logs())
 
     output_dir = PROJECT_ROOT / "examples" / "sample_outputs"
     write_json(output_dir / "parsed_logs.json", serialize_models(logs))
@@ -38,6 +40,7 @@ def main() -> None:
     write_json(output_dir / "validation_gaps.json", serialize_models(gaps))
     write_json(output_dir / "firmware_dependency_map.json", dependencies.model_dump(mode="json"))
     write_json(output_dir / "reliability_recommendations.json", serialize_models(recommendations))
+    write_json(output_dir / "telemetry_analysis.json", analysis.model_dump(mode="json"))
 
     api_dir = PROJECT_ROOT / "examples" / "api_responses"
     write_json(api_dir / "GET_api_v1_logs_parsed.json", serialize_models(logs))
@@ -45,6 +48,7 @@ def main() -> None:
     write_json(api_dir / "GET_api_v1_validation_gaps.json", serialize_models(gaps))
     write_json(api_dir / "GET_api_v1_firmware_dependencies.json", dependencies.model_dump(mode="json"))
     write_json(api_dir / "GET_api_v1_recommendations.json", serialize_models(recommendations))
+    write_json(api_dir / "POST_api_v1_analyze.json", analysis.model_dump(mode="json"))
 
 
 if __name__ == "__main__":
