@@ -17,6 +17,18 @@ When a high-density node crashes, operations teams are traditionally faced with 
 
 **AI-RI** serves as the definitive architecture to fuse these heterogeneous, multi-layer signals into a synchronized microsecond timeline at the exact millisecond of failure. By binding **24 years of enterprise server heritage**—forged across million-shipment portfolios like the ProLiant MicroServer, ML150/310/350, DL120/320 series, and the ultra-dense HPE Moonshot 1500 system—this framework maps raw hardware symptoms to precise silicon errata root causes and delivers actionable operational solutions instantly.
 
+### 🧠 Deep Diagnostic Logic: Beyond the Black Box
+
+The core inference engine of **AI-RI** is not a generic "black box" chatbot. It follows a rigorous, three-layer hardware-software co-engineering logic:
+
+1.  **Deterministic Signature Identification:** 
+    Instead of guessing, the system first traps low-level hardware telemetry via **PLDM/MCTP**. It parses raw binary registers such as **BIOS MCE (Machine Check Exceptions)** and **PCIe AER (Advanced Error Reporting)** to extract deterministic "physics-level" failure signatures (e.g., Vdroop transients, PCIe link training timeouts).
+
+2.  **Temporal & Fleet Correlation:** 
+    Using a sliding-window temporal alignment algorithm, the system fuses asynchronous logs across the entire cluster. It performs **Fleet Baseline Peer Comparison** to differentiate between individual hardware degradation and cluster-wide regression (e.g., identifying firmware-induced power profile defects across a specific cohort of nodes).
+
+3.  **Semantic Reasoning via Silicon Errata RAG:** 
+    The engine utilizes **Retrieval-Augmented Generation (RAG)** to index thousands of pages from Intel/NVIDIA **Silicon Errata manuals** and 24 years of proprietary RCA wiki data. It maps current failure vectors against documented silicon errata to deliver sub-second, actionable triage solutions that prevent cascading "All-Reduce" timeouts in LLM training.
 ---
 
 ## 🏗 Core Concepts & Capabilities
@@ -67,3 +79,5 @@ examples/
 scripts/
   generate_examples.py            # Utility script simulating real-world infrastructure failures
 requirements.txt
+
+
