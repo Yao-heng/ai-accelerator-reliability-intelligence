@@ -8,3 +8,4 @@ venv/
 server*.log
 .env
 .env.*
+scripts/output/
