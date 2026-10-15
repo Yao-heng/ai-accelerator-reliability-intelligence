@@ -1,3 +1,12 @@
+# =============================================================================
+# LEGACY / UNUSED — kept for reference only.
+#
+# This is an early, standalone draft of the reliability analyzer. It is NOT
+# imported or used by the FastAPI application (see app/main.py and
+# app/services/). The maintained implementation lives in app/services/,
+# in particular app/services/analyzer.py (ReliabilityAnalyzer).
+# Do not build new features on this file.
+# =============================================================================
 import os
 import json
 import re
