@@ -1,5 +1,7 @@
 # AI Accelerator Reliability Intelligence (AI-RI)
 
+[![CI](https://github.com/Yao-heng/ai-accelerator-reliability-intelligence/actions/workflows/ci.yml/badge.svg)](https://github.com/Yao-heng/ai-accelerator-reliability-intelligence/actions/workflows/ci.yml)
+
 A FastAPI prototype that encodes 24 years of platform firmware and RAS
 (Reliability, Availability, Serviceability) diagnostic experience into a
 deterministic reliability-analysis service: it ingests multi-layer platform
@@ -78,8 +80,8 @@ manually, made explicit and repeatable:
    power, error counters, latency) observed around it.
 3. **Rule-based recommendation.** Correlated incidents are combined with
    validation-gap and firmware blast-radius analysis to produce prioritized
-   recommendations: likely root cause, supporting evidence, affected
-   components, expected impact, and concrete next steps with a suggested owner.
+   recommendations, each with a title, rationale, supporting evidence,
+   affected components, expected impact, and concrete next steps.
 
 Errata knowledge retrieval (RAG) and LLM-assisted reasoning are natural
 extensions of step 3 — and are listed under Roadmap precisely because they
@@ -98,11 +100,11 @@ are **not** implemented here.
 - **Temporal correlation** — log events are bound to the telemetry samples
   nearest in time for the same accelerator/firmware pair, with per-metric
   status and a failure-mode classification.
-- **Threshold-based anomaly detection** — HBM ECC (corrected/uncorrected),
-  PCIe replay counts, fabric CRC errors, temperature, power, and latency are
+- **Threshold-based anomaly detection** — uncorrected HBM ECC, PCIe replay
+  counts, fabric CRC errors, temperature, power, and latency are
   checked against warning/critical thresholds.
 - **Deterministic risk scoring** — anomalies are aggregated into 0–100 risk
-  scores at node and rack level for triage ordering.
+  scores per accelerator (each score carries its rack id) for triage ordering.
 - **Firmware dependency mapping** — a firmware integration manifest is
   turned into dependency adjacency and blast-radius views across runtime,
   driver, hardware, and fleet surfaces.
@@ -155,56 +157,107 @@ scripts/
   generate_examples.py            # Regenerates examples/ from the sample data
   run_analysis_smoke_test.py      # End-to-end smoke test of the analyzer pipeline
 tests/
-  test_api.py                     # API integration tests
-  test_services.py                  # Unit tests for anomaly, risk, and log parsing services
-requirements.txt
-pyproject.toml
+  test_api.py                     # API integration tests (8 tests)
+  test_services.py                # Unit tests for anomaly, risk, and log parsing services (7 tests)
+.github/workflows/
+  ci.yml                          # GitHub Actions CI: pytest + smoke test on Python 3.12
+requirements.txt                  # Runtime dependencies only (FastAPI, Uvicorn, Pydantic)
+requirements-dev.txt              # Runtime + test dependencies (pytest, httpx)
+pyproject.toml                    # Project metadata; [project.optional-dependencies] dev mirrors requirements-dev.txt
+LICENSE                           # MIT
 ```
 
 ---
 
 ## Quick Start
 
+Requires Python 3.11 or newer. Run everything from the project root
+(the directory containing `app/` and `pyproject.toml`).
+
+### 1. Create a virtual environment and install dependencies
+
+macOS / Linux:
+
 ```bash
-python -m venv .venv
-# Windows:
-.venv\Scripts\activate
-# macOS / Linux:
+python3 -m venv .venv
 source .venv/bin/activate
+python -m pip install --upgrade pip
 pip install -r requirements.txt
+```
+
+Windows (PowerShell):
+
+```powershell
+py -m venv .venv
+.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+`requirements.txt` contains only the runtime dependencies (FastAPI,
+Uvicorn, Pydantic) — it is enough to run the service.
+
+### 2. Run the service
+
+```bash
 uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-Run from the project root (`ai-accelerator-reliability-intelligence/`). Then
-open:
+Then open:
 
 - API docs: `http://127.0.0.1:8000/docs`
-- Health check: `http://127.0.0.1:8000/health`
+- Health check: `http://127.0.0.1:8000/health` — returns
+  `{"status": "ok", "service": "ai-accelerator-reliability-intelligence"}`
 
-Run the tests and the smoke test after any change:
+### 3. Run the tests and the smoke test
+
+The test suite needs the development dependencies (`pytest`, `httpx`),
+which are **not** in `requirements.txt`:
 
 ```bash
+pip install -r requirements-dev.txt
 pytest
 python scripts/run_analysis_smoke_test.py
 ```
 
-The smoke test writes its output to `scripts/output/analysis_response.json`.
+Expected results (verified against the bundled sample data):
+`pytest` reports **15 passed**, and the smoke test prints:
+
+```text
+Smoke test completed successfully.
+Samples: 5
+Accelerators: 5
+Anomalies: 8
+Risk scores: 5
+Recommendations: 5
+```
+
+The smoke test analyzes `app/data/telemetry_samples.json` (via
+`DataRepository.load_telemetry()`) and writes its full output to
+`scripts/output/analysis_response.json`. The top risk score in that run
+is `accel-c91` in `rack-14` at **100/100 (critical)**, driven by
+`fabric_crc_errors=14`, `power_watts=641.5`, and
+`inference_latency_ms=57.9` during `allreduce-gradient-sync`.
 
 ### Docker (development mode)
 
+Run from the project root. macOS / Linux:
+
 ```bash
 docker run --rm -it \
-  -v "%cd%/ai-accelerator-reliability-intelligence:/app" \
+  -v "$(pwd):/app" \
   -w /app \
-  python:3.14-slim \
-  bash -lc "pip install -r requirements.txt && uvicorn app.main:app --reload --host 0.0.0.0 --port 8000"
+  -p 8000:8000 \
+  python:3.12-slim \
+  bash -lc "pip install -r requirements.txt && uvicorn app.main:app --host 0.0.0.0 --port 8000"
 ```
 
-(Use `$(pwd)` instead of `%cd%` on macOS/Linux.)
+On Windows, replace `$(pwd)` with `%cd%` (cmd) or `${PWD}` (PowerShell).
 
 ### Troubleshooting
 
 - `uvicorn` missing → reinstall dependencies: `pip install -r requirements.txt`.
+- `pytest` missing → install the dev dependencies: `pip install -r requirements-dev.txt`.
 - Import path failures → run from the project root so the local `app`
   package is on the Python path.
 - `Telemetry payload failed schema validation` → check payload fields
@@ -217,14 +270,21 @@ docker run --rm -it \
 
 ## API Endpoints
 
-- `GET /health`
-- `GET /api/v1/logs/parsed`
-- `GET /api/v1/telemetry/correlated`
-- `GET /api/v1/validation/gaps`
-- `GET /api/v1/firmware/dependencies`
-- `GET /api/v1/recommendations`
-- `POST /api/v1/analyze`
-- `POST /analyze` (root alias of the analyze endpoint)
+Verified against `app.routes` (FastAPI's built-in `/docs`, `/redoc`, and
+`/openapi.json` are also served):
+
+- `GET /health` — `{"status": "ok", "service": "ai-accelerator-reliability-intelligence"}`
+- `GET /api/v1/logs/parsed` — 6 parsed log entries from the bundled sample data
+- `GET /api/v1/telemetry/correlated` — 6 correlated events
+- `GET /api/v1/validation/gaps` — 4 validation gaps
+- `GET /api/v1/firmware/dependencies` — dependency map with 6 components
+- `GET /api/v1/recommendations` — 6 recommendations
+- `POST /api/v1/analyze` — analyze a telemetry payload, or the bundled
+  GPU telemetry stream when the body is empty (see below)
+- `POST /analyze` (root alias of `POST /api/v1/analyze`)
+
+Counts above are for the bundled sample data and are reproduced in
+`examples/api_responses/`.
 
 ## Example API Requests
 
@@ -262,13 +322,56 @@ curl -X POST "http://127.0.0.1:8000/api/v1/analyze" \
   -d '{}'
 ```
 
-Use the analyzer directly from Python:
+With an empty body the endpoint analyzes
+`app/data/gpu_telemetry_logs.jsonl` (note: a different dataset from the
+smoke test's `telemetry_samples.json`). The real response begins:
+
+```json
+{
+  "ingestion": {
+    "source": "jsonl",
+    "sample_count": 6,
+    "accelerator_count": 5,
+    "rack_count": 5,
+    "firmware_versions": ["7.4.1", "7.4.2", "7.5.0-rc2"],
+    "workload_phases": [
+      "allreduce-gradient-sync",
+      "batch-size-step",
+      "host-dma-burst",
+      "prefill-ramp",
+      "sustained-inference"
+    ],
+    "time_range": {"start": "2026-05-13T03:11:02Z", "end": "2026-05-13T03:21:28Z"}
+  },
+  "anomalies": [
+    {
+      "anomaly_id": "ANOM-0001",
+      "timestamp": "2026-05-13T03:11:02Z",
+      "accelerator_id": "gpu-r22-a17",
+      "rack_id": "rack-22",
+      "firmware_version": "7.4.2",
+      "workload_id": "llm-serving-prod-774",
+      "workload_phase": "prefill-ramp",
+      "metric": "temperature_c",
+      "value": 87.4,
+      "threshold": 86,
+      "severity": "warning",
+      "failure_mode": "thermal_throttle_boundary",
+      "description": "temperature_c=87.4 crossed 86 on gpu-r22-a17 during prefill-ramp."
+    }
+  ]
+}
+```
+
+In full, that response contains 13 anomalies, 5 risk scores, and 5
+recommendations; the complete captured response is in
+`examples/api_responses/POST_api_v1_analyze.json`. The single-sample
+request above returns 6 anomalies (one per checked metric), a risk
+score of 100/100 (critical) for `accel-a17`, and 1 recommendation.
+
+Use the analyzer directly from Python (run from the project root):
 
 ```python
-from pathlib import Path
-import sys
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-
 from app.services.analyzer import ReliabilityAnalyzer
 from app.services.data_repository import DataRepository
 
@@ -277,6 +380,9 @@ payload = repository.load_telemetry()
 response = ReliabilityAnalyzer().analyze(payload)
 print(response.model_dump(mode="json"))
 ```
+
+This is exactly what `scripts/run_analysis_smoke_test.py` runs; its
+summary output is shown in Quick Start above.
 
 ---
 
@@ -334,19 +440,41 @@ The sample data exercises the pipeline with:
 Validation gap examples include missing coverage for:
 
 - HBM ECC escalation on firmware `7.4.2` during `kv-cache-spill`
-- Fabric CRC burst on firmware `7.5.0-rc2` during distributed allreduce
-- Thermal throttle boundary behavior during sustained inference
+- Fabric CRC burst on firmware `7.5.0-rc2` during `allreduce-gradient-sync`
+- Thermal throttle boundary behavior on firmware `7.4.2` during `sustained-inference`
 
-An example recommendation emitted by the engine:
+The first recommendation emitted by the smoke-test run (see Quick
+Start; analysis of `app/data/telemetry_samples.json`), verbatim from
+`scripts/output/analysis_response.json`:
 
 ```json
 {
-  "risk_level": "High",
-  "possible_root_cause": "Firmware workaround missing for accelerator warm reset condition",
-  "recommended_validation": "Add warm reset loop test under high temperature with accelerator workload active",
-  "recommended_owner": "Firmware / Validation"
+  "recommendation_id": "OPS-0001",
+  "priority": "critical",
+  "title": "Contain accel-c91 critical infrastructure risk",
+  "rationale": "accel-c91 in rack-14 reached risk score 100/100 from 3 telemetry anomaly signal(s).",
+  "evidence": [
+    "power_watts=641.5 crossed 640 on accel-c91 during allreduce-gradient-sync.",
+    "fabric_crc_errors=14 crossed 12 on accel-c91 during allreduce-gradient-sync.",
+    "inference_latency_ms=57.9 crossed 45 on accel-c91 during allreduce-gradient-sync."
+  ],
+  "affected_components": [
+    "accelerator interconnect fabric",
+    "serving runtime SLO path",
+    "rack power delivery"
+  ],
+  "expected_impact": "Prevent accelerator resets, workload evacuation, and correlated rack incidents.",
+  "next_steps": [
+    "Attach the telemetry envelope to the incident ticket and freeze firmware rollout for the affected rack.",
+    "Compare the accelerator against same-rack peers for correlated power, thermal, and fabric signals.",
+    "Run rack power headroom verification before allowing larger prefill batches.",
+    "Drain or quarantine the accelerator until replay validation passes."
+  ]
 }
 ```
+
+Recommendations use the `ReliabilityRecommendation` schema defined in
+`app/models/schemas.py`.
 
 ## Regenerate Example Outputs
 
@@ -385,3 +513,7 @@ These are design directions, stated explicitly as future work:
   matching, and release-blocking policy.
 - Connect `RecommendationEngine` to ticketing or incident tooling once
   ownership and escalation rules are defined.
+
+## License
+
+MIT — see [`LICENSE`](LICENSE).

@@ -48,7 +48,7 @@ def get_correlated_telemetry() -> list[CorrelatedEvent]:
 
 @router.get("/validation/gaps", response_model=list[ValidationGap])
 def get_validation_gaps() -> list[ValidationGap]:
-    """Detect uncovered or stale validation scenarios for observed failures."""
+    """Detect validation scenarios that do not cover observed failures."""
     parsed_logs = log_parser.parse(repository.load_raw_logs())
     telemetry = repository.load_telemetry()
     correlated_events = correlator.correlate(parsed_logs, telemetry)

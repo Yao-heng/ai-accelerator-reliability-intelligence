@@ -1,182 +1,155 @@
-
----
-
-## PROJECT_PLAN.md 給 Codex 用
-
-```markdown
 # Project Plan: AI Accelerator Reliability Intelligence Platform
+
+> **Status note (2026-10-15):** This file began as the original planning
+> brief for the prototype. It has been reconciled with the code that
+> actually shipped, which is the FastAPI application under `app/`.
+> Where the original brief and the implementation diverged, this document
+> now follows the implementation. Directions that were considered in the
+> original brief but **not** implemented are listed explicitly at the end.
 
 ## Goal
 
-Build a lightweight MVP that demonstrates an AI-native infrastructure reliability workflow for GPU/TPU-class systems.
+Build a lightweight prototype that demonstrates a cross-layer reliability
+workflow for GPU/TPU-class systems: fuse platform logs and accelerator
+telemetry into one timeline, detect anomalies deterministically, score
+risk, expose validation coverage gaps and firmware blast radius, and emit
+prioritized, evidence-backed recommendations.
 
-The MVP should ingest sample firmware logs, telemetry data, errata notes, and validation reports, then generate:
+This is not a production system. The goal is to demonstrate architecture
+thinking and a working, tested prototype against bundled sample data.
 
-- correlated event timeline
-- possible root cause candidates
-- validation gap suggestions
-- firmware dependency mapping
-- reliability recommendation
+## Tech Stack (as implemented)
 
-## MVP Scope
+- Python 3.11+ (CI runs Python 3.12)
+- FastAPI + Uvicorn + Pydantic v2
+- JSON / JSONL sample data under `app/data/`
+- pytest + httpx (FastAPI `TestClient`) for tests
+- GitHub Actions CI (`.github/workflows/ci.yml`)
 
-This is not a production system.  
-The goal is to demonstrate architecture thinking and a working prototype.
+No LangChain, vector store (Chroma / FAISS), or Streamlit UI is used.
+Those were options in the original brief; none of them shipped — see
+"Considered but not implemented" below.
 
-## Tech Stack
-
-- Python
-- FastAPI
-- Markdown documentation
-- JSON sample data
-- Optional: LangChain or simple local retrieval logic
-- Optional: Chroma / FAISS for vector search
-- Optional: Streamlit UI later
-
-## Folder Structure
+## Folder Structure (as implemented)
 
 ```text
-ai-accelerator-reliability-intelligence/
-│
-├── README.md
-├── PROJECT_PLAN.md
-│
-├── docs/
-│   ├── telemetry_correlation.md
-│   ├── validation_gap_analysis.md
-│   └── firmware_dependency_mapping.md
-│
-├── data/
-│   ├── sample_bios_log.txt
-│   ├── sample_bmc_sel.json
-│   ├── sample_telemetry.json
-│   ├── sample_errata.md
-│   └── sample_validation_report.md
-│
-├── src/
-│   ├── main.py
-│   ├── log_parser.py
-│   ├── telemetry_correlator.py
-│   ├── validation_gap_analyzer.py
-│   ├── dependency_mapper.py
-│   └── recommendation_engine.py
-│
-└── tests/
-    └── test_basic_workflow.py
+app/
+  main.py                         # FastAPI application entrypoint
+  api/routes.py                   # REST routes under /api/v1
+  models/schemas.py               # Pydantic domain models
+  services/                       # Analysis services (see below)
+  data/                           # Bundled sample data
+docs/                             # This plan and three design notes
+examples/                         # Captured API responses and sample outputs
+scripts/                          # Smoke test and example generator
+src/intelligence_analyzer.py      # LEGACY / UNUSED early draft, kept for reference
+tests/                            # test_api.py (8 tests), test_services.py (7 tests)
+```
 
+## Functional Requirements (as implemented)
 
+1. **Log Parser** — `app/services/log_parser.py` (`LogParser`)
+   Parses the structured lines of `app/data/accelerator_logs.log` and
+   extracts timestamp, severity, accelerator, rack, firmware version,
+   subsystem, event code, message, and trailing key-value metadata.
+   Unstructured lines fall back to a `WARNING` /
+   `UNSTRUCTURED_LOG_LINE` record. Returns `AcceleratorLogEntry` objects.
 
-Functional Requirements
-1. Log Parser
+2. **Telemetry Correlator** — `app/services/telemetry_correlator.py`
+   (`TelemetryCorrelator`)
+   Correlates warning/error/critical log events with the nearest
+   telemetry sample (from `app/data/telemetry_samples.json`) for the same
+   accelerator and firmware version. See `docs/telemetry_correlation.md`.
 
-Create src/log_parser.py.
+3. **Validation Gap Analyzer** — `app/services/validation_gap_analyzer.py`
+   (`ValidationGapAnalyzer`)
+   Compares each correlated event's failure mode, firmware version, and
+   workload phase against the scenarios in
+   `app/data/validation_matrix.json` and flags uncovered combinations.
+   See `docs/validation_gap_analysis.md`.
 
-It should parse sample BIOS/BMC logs and extract:
+4. **Firmware Dependency Mapper** — `app/services/firmware_dependency_mapper.py`
+   (`FirmwareDependencyMapper`)
+   Builds dependency adjacency and blast-radius views from
+   `app/data/firmware_dependencies.json`.
+   See `docs/firmware_dependency_mapping.md`.
 
-timestamp
-event type
-severity
-subsystem
-message
+5. **Recommendation Engine** — `app/services/recommendation_engine.py`
+   (`RecommendationEngine`), plus
+   `app/services/infrastructure_advisor.py`
+   (`InfrastructureReliabilityAdvisor`) for the `/analyze` pipeline.
+   Generates prioritized recommendations from correlated events,
+   validation gaps, dependency blast radius, anomalies, and risk scores.
+   Recommendations use the `ReliabilityRecommendation` schema
+   (`recommendation_id`, `priority`, `title`, `rationale`, `evidence`,
+   `affected_components`, `expected_impact`, `next_steps`) — see the real
+   captured examples under `examples/`.
 
-Return structured JSON.
+6. **Telemetry analysis pipeline** — `app/services/analyzer.py`
+   (`ReliabilityAnalyzer`), with `telemetry_ingestion.py`,
+   `anomaly_detector.py`, and `risk_scoring.py`.
+   Ingests a telemetry payload (or the bundled
+   `app/data/gpu_telemetry_logs.jsonl` by default), detects
+   threshold-based anomalies, scores risk 0–100 per accelerator/rack,
+   and returns operations recommendations.
 
-2. Telemetry Correlator
+7. **FastAPI Backend** — `app/main.py`, routes in `app/api/routes.py`
 
-Create src/telemetry_correlator.py.
+   ```text
+   GET  /health
+   GET  /api/v1/logs/parsed
+   GET  /api/v1/telemetry/correlated
+   GET  /api/v1/validation/gaps
+   GET  /api/v1/firmware/dependencies
+   GET  /api/v1/recommendations
+   POST /api/v1/analyze
+   POST /analyze            (root alias of POST /api/v1/analyze)
+   ```
 
-It should correlate events by:
+   The original brief proposed `POST /analyze/logs`,
+   `POST /analyze/telemetry`, `POST /analyze/validation-gap`,
+   `POST /analyze/dependency-map`, and `POST /analyze/recommendation`.
+   Those paths were never implemented; the endpoints above are the real
+   API surface (verified against `app.routes`).
 
-timestamp proximity
-subsystem relationship
-severity
-repeated patterns
+## Sample Data
 
-Output a correlated event timeline.
-3. Validation Gap Analyzer
+All sample data is fictional and lives under `app/data/`:
 
-Create src/validation_gap_analyzer.py.
+- `accelerator_logs.log` — multi-layer firmware/OS log lines
+- `telemetry_samples.json` — normalized telemetry samples
+- `gpu_telemetry_logs.jsonl` — telemetry stream with vendor-style field
+  aliases (`gpu_id`, `fw`, `temp_c`, …) that ingestion normalizes
+- `validation_matrix.json` — release validation coverage scenarios
+- `firmware_dependencies.json` — firmware integration manifest for the
+  fictional "AIX-9000" platform
 
-It should compare errata notes against validation reports and identify missing test coverage.
+No proprietary company data is included.
 
-Example:
-If errata says “warm reset under high temperature,” but validation report lacks “warm reset” or “high temperature,” flag a gap.
+## Success Criteria
 
-4. Firmware Dependency Mapper
+The prototype is successful if a user can:
 
-Create src/dependency_mapper.py.
+- Run the FastAPI service (`uvicorn app.main:app`).
+- Query the bundled sample logs, telemetry, gaps, and dependencies.
+- Submit telemetry to `POST /api/v1/analyze` (or use the bundled data
+  with an empty body) and receive structured analysis: ingestion summary,
+  anomalies, risk scores, and recommendations.
+- Run `pytest` (15 tests) and `python scripts/run_analysis_smoke_test.py`
+  successfully — both also run in CI.
 
-It should build simple dependency mappings:
-Errata → Firmware Workaround → Validation Test → Telemetry Rule
-Represent output as JSON.
+## Considered but not implemented
 
-5. Recommendation Engine
+These appeared in the original brief or are natural extensions; none of
+them are in the code today, and the README lists them under Roadmap:
 
-Create src/recommendation_engine.py.
-
-It should generate simple recommendations based on:
-
-correlated telemetry
-validation gaps
-dependency risks
-
-Example output:
-{
-  "risk_level": "High",
-  "possible_root_cause": "Firmware workaround missing for accelerator warm reset condition",
-  "recommended_validation": "Add warm reset loop test under high temperature with accelerator workload active",
-  "recommended_owner": "Firmware / Validation"
-}
-
-6. FastAPI Backend
-
-Create src/main.py.
-
-Expose endpoints:
-
-GET /health
-POST /analyze/logs
-POST /analyze/telemetry
-POST /analyze/validation-gap
-POST /analyze/dependency-map
-POST /analyze/recommendation
-Sample Data Requirements
-
-Create realistic but fictional sample data.
-
-Do not include proprietary company data.
-
-Use fictional names such as:
-
-Accelerator-X B1 stepping
-warm reset failure
-high temperature condition
-PCIe retraining event
-BMC thermal warning
-firmware workaround FW-WA-1024
-README Update
-
-Add:
-
-project overview
-architecture diagram
-how to run
-example API call
-sample output
-Success Criteria
-
-The MVP is successful if a user can:
-
-Run the FastAPI service.
-Submit sample logs / telemetry.
-Receive structured analysis.
-See validation gaps.
-See dependency mapping.
-Receive a reliability recommendation.
-
-Tone
-
-This project should look like a systems architecture prototype, not a toy chatbot.
-
-Use professional naming and clear documentation.
-
+- LangChain / local retrieval over errata notes, Chroma / FAISS vector
+  search (no RAG or LLM inference of any kind)
+- Streamlit UI
+- Live BMC / Redfish / IPMI / PLDM collectors
+- Stale-test detection in the validation gap analyzer (scenario
+  `last_run` dates are loaded but not used to flag gaps)
+- Sample files named `sample_bios_log.txt`, `sample_bmc_sel.json`,
+  `sample_telemetry.json`, `sample_errata.md`, or
+  `sample_validation_report.md`, and a `tests/test_basic_workflow.py`
+  file (the shipped equivalents are listed above)
