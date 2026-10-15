@@ -1,0 +1,7 @@
+# Development / test dependencies.
+# Installs everything in requirements.txt plus the tools needed to run
+# the test suite. Keep this file, the `dev` extra in pyproject.toml, and
+# .github/workflows/ci.yml in sync.
+-r requirements.txt
+pytest>=8.0
+httpx>=0.27
