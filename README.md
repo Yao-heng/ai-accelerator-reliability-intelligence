@@ -31,8 +31,9 @@ automated tests, and its scope is stated plainly:
 - Bundled sample data (GPU telemetry, platform logs, validation matrix,
   firmware dependency manifest) plus captured example API responses under
   `examples/`
-- Automated tests (`pytest`, see `tests/`), CI (GitHub Actions), and a smoke
-  test script (`python scripts/run_analysis_smoke_test.py`)
+- Automated tests (`pytest`, see `tests/`), type checking (`mypy` with
+  required annotations), CI (GitHub Actions), and a smoke test script
+  (`python scripts/run_analysis_smoke_test.py`)
 
 **Deliberately out of scope for this prototype**
 
@@ -159,10 +160,12 @@ scripts/
 tests/
   test_api.py                     # API integration tests (8 tests)
   test_services.py                # Unit tests for anomaly, risk, and log parsing services (7 tests)
+  test_telemetry_ingestion.py     # Unit tests for telemetry parsing, alias normalization, summaries (10 tests)
+  test_data_repository.py         # Unit tests for sample-data JSON shape validation (4 tests)
 .github/workflows/
-  ci.yml                          # GitHub Actions CI: pytest + smoke test on Python 3.12
+  ci.yml                          # GitHub Actions CI: mypy + pytest + smoke test on Python 3.12
 requirements.txt                  # Runtime dependencies only (FastAPI, Uvicorn, Pydantic)
-requirements-dev.txt              # Runtime + test dependencies (pytest, httpx)
+requirements-dev.txt              # Runtime + test dependencies (pytest, httpx, mypy)
 pyproject.toml                    # Project metadata; [project.optional-dependencies] dev mirrors requirements-dev.txt
 LICENSE                           # MIT
 ```
@@ -221,7 +224,7 @@ python scripts/run_analysis_smoke_test.py
 ```
 
 Expected results (verified against the bundled sample data):
-`pytest` reports **15 passed**, and the smoke test prints:
+`pytest` reports **29 passed**, and the smoke test prints:
 
 ```text
 Smoke test completed successfully.

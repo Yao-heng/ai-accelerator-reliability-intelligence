@@ -13,9 +13,9 @@ import re
 from datetime import datetime
 
 class AIAcceleratorReliabilityIntelligence:
-    def __init__(self, knowledge_base_path=None):
-        self.raw_logs = []
-        self.fused_timeline = []
+    def __init__(self, knowledge_base_path: str | None = None) -> None:
+        self.raw_logs: list[dict[str, str]] = []
+        self.fused_timeline: list[dict[str, str]] = []
         # 內建大廠硬體故障知識庫 (24-year Domain Knowledge Base)
         self.hardware_expert_rules = {
             "MCE_ERR_PCIe_Link_Degraded": {
@@ -28,7 +28,7 @@ class AIAcceleratorReliabilityIntelligence:
             }
         }
 
-    def ingest_logs(self, bmc_sel_path, bios_mce_path, sbmc_path):
+    def ingest_logs(self, bmc_sel_path: str, bios_mce_path: str, sbmc_path: str) -> None:
         """
         實事求是：跨層級讀取原始日誌 (BMC SEL, BIOS MCE, Satellite BMC Logs)
         """
@@ -45,7 +45,7 @@ class AIAcceleratorReliabilityIntelligence:
         # 3. 熔接 加速器子卡 Log
         self.raw_logs.append({"source": "SATELLITE_BMC", "timestamp": mock_timestamp, "msg": "ERR_FATAL: NVLink symbol error rate exceeded maximum bit error rate (BER) limit."})
 
-    def fuse_and_align_timeline(self):
+    def fuse_and_align_timeline(self) -> list[dict[str, str]]:
         """
         核心技術：利用微秒級時間軸對齊（Time-series Alignment）將雜訊熔接為單一故障事件
         """
@@ -54,7 +54,7 @@ class AIAcceleratorReliabilityIntelligence:
         self.fused_timeline = sorted(self.raw_logs, key=lambda x: x['timestamp'])
         return self.fused_timeline
 
-    def analyze_root_cause_ai(self):
+    def analyze_root_cause_ai(self) -> str:
         """
         AI 智能推理核心：在故障當下，結合 24 年硬體內功知識庫，秒級給出原因與 Solutions
         """

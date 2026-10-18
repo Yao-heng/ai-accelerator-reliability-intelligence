@@ -30,9 +30,14 @@ class TelemetryJsonParser:
             return []
 
         if "\n" not in text and (text.startswith("[") or text.startswith("{")):
-            parsed = json.loads(text)
+            parsed: Any = json.loads(text)
             if isinstance(parsed, dict):
-                return parsed.get("samples", [parsed])
+                samples = parsed.get("samples", [parsed])
+                if not isinstance(samples, list):
+                    raise ValueError("Telemetry 'samples' field must be a JSON array.")
+                return samples
+            if not isinstance(parsed, list):
+                raise ValueError("Telemetry JSON payload must be an object or an array.")
             return parsed
 
         rows: list[dict[str, Any]] = []
@@ -41,9 +46,12 @@ class TelemetryJsonParser:
             if not line or line.startswith("#"):
                 continue
             try:
-                rows.append(json.loads(line))
+                row: Any = json.loads(line)
             except json.JSONDecodeError as exc:
                 raise ValueError(f"Invalid telemetry JSONL at line {line_number}: {exc.msg}") from exc
+            if not isinstance(row, dict):
+                raise ValueError(f"Invalid telemetry JSONL at line {line_number}: expected a JSON object.")
+            rows.append(row)
         return rows
 
     def _normalize_sample(self, row: dict[str, Any]) -> dict[str, Any]:

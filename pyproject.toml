@@ -20,10 +20,20 @@ dependencies = [
 dev = [
     "pytest>=8.0",
     "httpx>=0.27",
+    "mypy>=1.10",
 ]
 
 [tool.setuptools]
 packages = ["app", "app.api", "app.models", "app.services"]
+
+[tool.mypy]
+python_version = "3.11"
+# Progressive strictness: every function must be annotated
+# (disallow_untyped_defs) and functions must not silently return Any.
+# Scope: `mypy app src scripts` (see CI). Tests are not type-checked yet.
+disallow_untyped_defs = true
+warn_return_any = true
+warn_unused_ignores = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
