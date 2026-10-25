@@ -167,7 +167,7 @@ tests/
 requirements.txt                  # Runtime dependencies only (FastAPI, Uvicorn, Pydantic)
 requirements-dev.txt              # Runtime + test dependencies (pytest, httpx, mypy)
 pyproject.toml                    # Project metadata; [project.optional-dependencies] dev mirrors requirements-dev.txt
-LICENSE                           # MIT
+LICENSE                           # Apache-2.0
 ```
 
 ---
